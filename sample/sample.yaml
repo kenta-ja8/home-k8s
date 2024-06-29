@@ -23,6 +23,12 @@ spec:
         image: nginx:1.27
         ports:
         - containerPort: 80
+        env:
+        - name: SAMPLE_HOST
+          valueFrom:
+            secretKeyRef:
+              name: sample-sealedsecret
+              key: SAMPLE_HOST
 ---
 apiVersion: v1
 kind: Service
