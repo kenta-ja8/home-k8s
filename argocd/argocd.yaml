@@ -13,5 +13,5 @@ spec:
   source:
     repoURL: https://github.com/kenta-ja8/home-k8s.git
     targetRevision: main
-    path: app/
+    path: app-helm/
   project: default
