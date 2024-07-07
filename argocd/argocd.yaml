@@ -6,6 +6,7 @@ metadata:
     argocd-image-updater.argoproj.io/write-back-method: argocd
     argocd-image-updater.argoproj.io/image-list: my-image=ghcr.io/kenta-ja8/hello-world
     argocd-image-updater.argoproj.io/my-image.update-strategy: latest
+    argocd-image-updater.argoproj.io/my-image.platform: "linux/arm64"
 spec:
   destination:
     namespace: app
@@ -15,3 +16,19 @@ spec:
     targetRevision: main
     path: app-helm/
   project: default
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-image-updater-config
+data:
+  log.level: debug
+  registries.conf: |
+    registries:
+    - name: ghcr
+      api_url: https://ghcr.io
+      prefix: ghcr.io
+      insecure: yes
+  config.yaml: |
+    platforms:
+      - name: linux/arm64
