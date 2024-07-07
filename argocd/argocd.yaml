@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: app-hello-world-image-updater
+  annotations:
+    argocd-image-updater.argoproj.io/write-back-method: argocd
+    argocd-image-updater.argoproj.io/image-list: my-image=ghcr.io/kenta-ja8/hello-world
+    argocd-image-updater.argoproj.io/my-image.update-strategy: latest
+spec:
+  destination:
+    namespace: app
+    server: https://kubernetes.default.svc
+  source:
+    repoURL: https://github.com/kenta-ja8/home-k8s.git
+    targetRevision: main
+    path: app/
+  project: default
