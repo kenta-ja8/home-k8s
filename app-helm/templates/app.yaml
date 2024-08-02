@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: hello-world
-        image: ghcr.io/kenta-ja8/hello-world:latest
+        image: ghcr.io/kenta-ja8/hello-world:{{ .Values.image.tag }}
         ports:
         - containerPort: 80
         env:
