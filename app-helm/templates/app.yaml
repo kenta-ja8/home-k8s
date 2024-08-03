@@ -29,3 +29,30 @@ spec:
             secretKeyRef:
               name: app-sealedsecret
               key: SAMPLE_HOST
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-world2-dep
+  namespace: app
+spec:
+  selector:
+    matchLabels:
+      app: hello-world2
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: hello-world2
+    spec:
+      containers:
+      - name: hello-world2
+        image: ghcr.io/kenta-ja8/hello-world:{{ .Values.image.tag2 }}
+        ports:
+        - containerPort: 80
+        env:
+        - name: SAMPLE_USER
+          valueFrom:
+            secretKeyRef:
+              name: app-sealedsecret
+              key: SAMPLE_HOST
