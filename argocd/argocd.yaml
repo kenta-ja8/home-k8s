@@ -4,8 +4,8 @@ metadata:
   name: app-hello-world-image-updater
   annotations:
     argocd-image-updater.argoproj.io/write-back-method: argocd
-    argocd-image-updater.argoproj.io/image-list: my-image=ghcr.io/kenta-ja8/hello-world
-    argocd-image-updater.argoproj.io/my-image.update-strategy: latest
+    argocd-image-updater.argoproj.io/image-list: my-image=ghcr.io/kenta-ja8/hello-world:latest
+    argocd-image-updater.argoproj.io/my-image.update-strategy: digest
     argocd-image-updater.argoproj.io/my-image.platform: "linux/arm64"
 spec:
   destination:
