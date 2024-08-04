@@ -110,4 +110,16 @@ spec:
       - name: pgdata
         persistentVolumeClaim:
           claimName: pgdata-pvc
-
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-svc
+  namespace: app
+spec:
+  ports:
+  - port: 5432
+    targetPort: 5432
+  selector:
+    app: postgres
+  type: ClusterIP
