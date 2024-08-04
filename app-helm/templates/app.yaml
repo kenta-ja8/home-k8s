@@ -25,11 +25,17 @@ spec:
         ports:
         - containerPort: 80
         env:
-        - name: SAMPLE_USER
+        - name: POSTGRES_HOST
+          value: postgres-svc.app.svc.cluster.local
+        - name: POSTGRES_DB
+          value: maindb
+        - name: POSTGRES_USER
+          value: mainuser
+        - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
               name: app-sealedsecret
-              key: SAMPLE_HOST
+              key: POSTGRES_PASSWORD
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -53,11 +59,17 @@ spec:
         ports:
         - containerPort: 80
         env:
-        - name: SAMPLE_USER
+        - name: POSTGRES_HOST
+          value: postgres-svc.app.svc.cluster.local
+        - name: POSTGRES_DB
+          value: maindb
+        - name: POSTGRES_USER
+          value: mainuser
+        - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
               name: app-sealedsecret
-              key: SAMPLE_HOST
+              key: POSTGRES_PASSWORD
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
