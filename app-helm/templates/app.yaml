@@ -59,6 +59,19 @@ spec:
               name: app-sealedsecret
               key: SAMPLE_HOST
 ---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pgdata-pvc
+  namespace: app
+spec:
+  storageClassName: longhorn
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -96,5 +109,5 @@ spec:
       volumes:
       - name: pgdata
         persistentVolumeClaim:
-          claimName: local-pvc
+          claimName: pgdata-pvc
 
