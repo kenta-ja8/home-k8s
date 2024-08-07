@@ -6,22 +6,22 @@ metadata:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hello-world-dep
+  name: home-k8s-app-server-dep
   namespace: app
 spec:
   selector:
     matchLabels:
-      app: hello-world
+      app: home-k8s-app-server
   replicas: 3
   revisionHistoryLimit: 2
   template:
     metadata:
       labels:
-        app: hello-world
+        app: home-k8s-app-server
     spec:
       containers:
-      - name: hello-world
-        image: ghcr.io/kenta-ja8/hello-world:{{ .Values.image.tag }}
+      - name: home-k8s-app-server
+        image: ghcr.io/kenta-ja8/home-k8s-app-server:{{ .Values.image.serverTag }}
         ports:
         - containerPort: 80
         env:
@@ -37,39 +37,25 @@ spec:
               name: app-sealedsecret
               key: POSTGRES_PASSWORD
 ---
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: batch/v1
+kind: CronJob
 metadata:
-  name: hello-world2-dep
+  name: home-k8s-app-job
   namespace: app
 spec:
-  selector:
-    matchLabels:
-      app: hello-world2
-  replicas: 2
-  revisionHistoryLimit: 2
-  template:
-    metadata:
-      labels:
-        app: hello-world2
+  schedule: "*/10 * * * *"
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
     spec:
-      containers:
-      - name: hello-world2
-        image: ghcr.io/kenta-ja8/hello-world:{{ .Values.image.tag2 }}
-        ports:
-        - containerPort: 80
-        env:
-        - name: POSTGRES_HOST
-          value: postgres-svc.app.svc.cluster.local
-        - name: POSTGRES_DB
-          value: maindb
-        - name: POSTGRES_USER
-          value: mainuser
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: app-sealedsecret
-              key: POSTGRES_PASSWORD
+      template:
+        spec:
+          containers:
+            - name: home-k8s-app-job
+              image: ghcr.io/kenta-ja8/home-k8s-app-job:{{ .Values.image.jobTag }}
+              args:
+                - "sample"
+          restartPolicy: OnFailure
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

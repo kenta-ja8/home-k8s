@@ -4,13 +4,13 @@ metadata:
   name: app-hello-world-image-updater
   annotations:
     argocd-image-updater.argoproj.io/write-back-method: argocd
-    argocd-image-updater.argoproj.io/image-list: my-image=ghcr.io/kenta-ja8/hello-world:latest, my-image2=ghcr.io/kenta-ja8/hello-world:latest
-    argocd-image-updater.argoproj.io/my-image.helm.image-tag: image.tag
-    argocd-image-updater.argoproj.io/my-image.update-strategy: digest
-    argocd-image-updater.argoproj.io/my-image.platform: "linux/arm64"
-    argocd-image-updater.argoproj.io/my-image2.helm.image-tag: image.tag2
-    argocd-image-updater.argoproj.io/my-image2.update-strategy: digest
-    argocd-image-updater.argoproj.io/my-image2.platform: "linux/arm64"
+    argocd-image-updater.argoproj.io/image-list: server-image=ghcr.io/kenta-ja8/home-k8s-app-server:latest, job-image=ghcr.io/kenta-ja8/home-k8s-app-job:latest
+    argocd-image-updater.argoproj.io/server-image.helm.image-tag: image.serverTag
+    argocd-image-updater.argoproj.io/server-image.update-strategy: digest
+    argocd-image-updater.argoproj.io/server-image.platform: "linux/arm64"
+    argocd-image-updater.argoproj.io/job-image.helm.image-tag: image.jobTag
+    argocd-image-updater.argoproj.io/job-image.update-strategy: digest
+    argocd-image-updater.argoproj.io/job-image.platform: "linux/arm64"
 spec:
   destination:
     namespace: app
