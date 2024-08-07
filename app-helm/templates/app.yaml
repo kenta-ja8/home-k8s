@@ -55,6 +55,18 @@ spec:
               image: ghcr.io/kenta-ja8/home-k8s-app-job:{{ .Values.image.jobTag }}
               args:
                 - "sample"
+              env:
+              - name: POSTGRES_HOST
+                value: postgres-svc.app.svc.cluster.local
+              - name: POSTGRES_DB
+                value: maindb
+              - name: POSTGRES_USER
+                value: mainuser
+              - name: POSTGRES_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: app-sealedsecret
+                    key: POSTGRES_PASSWORD
           restartPolicy: OnFailure
 ---
 apiVersion: v1
