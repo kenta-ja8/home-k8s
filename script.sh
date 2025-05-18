@@ -2,6 +2,13 @@
 
 set -euxo pipefail
 
+cleanup() {
+  echo "Cleaning up..."
+  kill $(jobs -p)
+  wait
+}
+trap cleanup SIGINT
+
 function buildAndPush() {
   docker buildx build \
     --platform linux/arm64 \
@@ -31,6 +38,19 @@ case "$1" in
       echo "buildAll"
       buildAndPush home-k8s-app-server ./cmd/server
       buildAndPush home-k8s-app-job ./cmd/job
+      ;;
+  portForward)
+      echo "portForward"
+      PORT_FORWARDS=(
+        "kubectl port-forward svc/argocd-server -n argocd --address 0.0.0.0 8080:443"
+        "kubectl port-forward svc/postgres-svc 15432:5432 --namespace app"
+        "kubectl port-forward svc/grafana-svc 13000:3000 --namespace visualization"
+      )
+      for pf in "${PORT_FORWARDS[@]}"; do
+        echo "Running: $pf"
+        $pf &
+      done
+      wait
       ;;
   *)
       echo "Unknown function: $1"

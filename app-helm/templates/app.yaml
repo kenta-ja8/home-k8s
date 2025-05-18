@@ -44,6 +44,7 @@ metadata:
   namespace: app
 spec:
   schedule: "*/10 * * * *"
+  startingDeadlineSeconds: 300
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 1
   jobTemplate:
@@ -67,6 +68,30 @@ spec:
                   secretKeyRef:
                     name: app-sealedsecret
                     key: POSTGRES_PASSWORD
+          restartPolicy: OnFailure
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: home-k8s-app-job-pantry-order-reminder
+  namespace: app
+spec:
+  schedule: "0 20 * * 1"
+  startingDeadlineSeconds: 300
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: home-k8s-app-job-pantry-order-reminder
+              image: ghcr.io/kenta-ja8/home-k8s-app-job:{{ .Values.image.jobTag }}
+              args:
+                - "pantry-order-reminder"
+              envFrom:
+              - secretRef:
+                  name: app-sealedsecret
           restartPolicy: OnFailure
 ---
 apiVersion: v1

@@ -30,11 +30,18 @@ var yourCommand = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(yourCommand)
 	yourCommand.Flags().StringP("flagname", "f", "defaultValue", "Flag description")
+	rootCmd.AddCommand(&cobra.Command{
+		Use: "pantry-order-reminder",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			uc := usecase.NewPantryOrderReminderUsecase()
+			return uc.Run(cmd.Context())
+		},
+	})
 }
 
 func main() {
-	logger.Info("Hello World!")
-	defer logger.Info("Goodbye World!")
+	logger.Info("start job")
+	defer logger.Info("end job")
 
 	if err := rootCmd.Execute(); err != nil {
 		logger.Error("Error:", err)
