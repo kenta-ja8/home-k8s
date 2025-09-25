@@ -23,7 +23,8 @@ spec:
       - name: home-k8s-app-server
         image: ghcr.io/kenta-ja8/home-k8s-app-server:{{ .Values.image.serverTag }}
         ports:
-        - containerPort: 80
+        - containerPort: 8080
+          name: app-server-p
         env:
         - name: POSTGRES_HOST
           value: postgres-svc.app.svc.cluster.local
@@ -159,3 +160,19 @@ spec:
   selector:
     app: postgres
   type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: home-k8s-app-server-svc
+  namespace: app
+spec:
+  type: NodePort
+  selector:
+    app: home-k8s-app-server
+  ports:
+    - name: http
+      port: 8080
+      targetPort: app-server-p
+      nodePort: 30080

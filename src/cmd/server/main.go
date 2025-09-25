@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
@@ -21,19 +20,18 @@ func exec() error {
 	}
 
 	sampleUsecase := usecase.NewSampleUsecase(cfg, db)
+	healthcareCollectorUsecase := usecase.NewHealthcareCollectorUsecase(cfg, db)
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		sampleUsecase.AccessDB(w, r)
 	})
+	r.Post("/healthcare-collect", func(w http.ResponseWriter, r *http.Request) {
+		healthcareCollectorUsecase.Collect(w, r)
+	})
 
-	var employee entity.Employee
-	db.First(&employee)
-	fmt.Println("First employee:", employee, employee.ID)
-	fmt.Printf("First employee: %+v\n", employee)
-
-	err = http.ListenAndServe(":3000", r)
+	err = http.ListenAndServe(":8080", r)
 	if err != nil {
 		return err
 	}

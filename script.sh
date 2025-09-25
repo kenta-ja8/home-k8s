@@ -2,6 +2,17 @@
 
 set -euxo pipefail
 
+if [ -z "${CONTAINER_CLI:-}" ]; then
+  if command -v docker >/dev/null 2>&1; then
+    CONTAINER_CLI=docker
+  elif command -v podman >/dev/null 2>&1; then
+    CONTAINER_CLI=podman
+  else
+    echo "Error: docker or podman is required" >&2
+    exit 1
+  fi
+fi
+
 cleanup() {
   echo "Cleaning up..."
   kill $(jobs -p)
@@ -10,14 +21,19 @@ cleanup() {
 trap cleanup SIGINT
 
 function buildAndPush() {
-  docker buildx build \
+  local image=$1
+  local target=$2
+  local build_date
+  build_date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+  "$CONTAINER_CLI" build \
     --platform linux/arm64 \
-    --provenance false \
-    --tag ghcr.io/kenta-ja8/$1:latest \
-    --push \
-    --build-arg BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ") \
-    --build-arg TARGET=$2 \
+    --tag ghcr.io/kenta-ja8/"${image}":latest \
+    --build-arg BUILD_DATE="${build_date}" \
+    --build-arg TARGET="${target}" \
     ./src/
+
+  "$CONTAINER_CLI" push ghcr.io/kenta-ja8/"${image}":latest
 }
 
 if [ "$#" -eq 0 ]; then
@@ -44,7 +60,7 @@ case "$1" in
       PORT_FORWARDS=(
         "kubectl port-forward svc/argocd-server -n argocd --address 0.0.0.0 8080:443"
         "kubectl port-forward svc/postgres-svc 15432:5432 --namespace app"
-        "kubectl port-forward svc/grafana-svc 13000:3000 --namespace visualization"
+        "kubectl port-forward svc/grafana-svc 30090:3000 --namespace visualization"
       )
       for pf in "${PORT_FORWARDS[@]}"; do
         echo "Running: $pf"

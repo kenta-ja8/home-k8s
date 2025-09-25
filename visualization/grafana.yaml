@@ -75,11 +75,12 @@ metadata:
   name: grafana-svc
   namespace: visualization
 spec:
+  type: NodePort
   ports:
-    - port: 3000
+    - name: http
+      port: 3000
       protocol: TCP
       targetPort: http-grafana
+      nodePort: 30090
   selector:
     app: grafana
-  type: ClusterIP
-
