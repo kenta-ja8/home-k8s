@@ -1,0 +1,30 @@
+name: Build and Push Images
+
+on:
+  push:
+    paths:
+      - 'src/**'
+      - 'script.sh'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: echo "${GHCR_TOKEN}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Build and push server and job images
+        env:
+          CONTAINER_CLI: docker
+          DOCKER_BUILDKIT: 1
+        run: ./script.sh buildAll
