@@ -23,17 +23,38 @@ trap cleanup SIGINT
 function buildAndPush() {
   local image=$1
   local target=$2
+  local cache_from_flags="${CACHE_FROM_FLAGS:-}"
+  local cache_to_flags="${CACHE_TO_FLAGS:-}"
+  local push_flag=""
+  if [ -n "${cache_from_flags}" ]; then
+    push_flag="--push"
+  fi
   local build_date
   build_date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+  if [ -n "${cache_from_flags}" ]; then
+    cache_from_flags="${cache_from_flags},scope=${image}"
+  fi
+
+  if [ -n "${cache_to_flags}" ]; then
+    cache_to_flags="${cache_to_flags},scope=${image}"
+  fi
 
   "$CONTAINER_CLI" build \
     --platform linux/arm64 \
     --tag ghcr.io/kenta-ja8/"${image}":latest \
     --build-arg BUILD_DATE="${build_date}" \
     --build-arg TARGET="${target}" \
+    ${push_flag} \
+    ${cache_from_flags} \
+    ${cache_to_flags} \
+    --progress=plain \
     ./src/
 
-  "$CONTAINER_CLI" push ghcr.io/kenta-ja8/"${image}":latest
+  if [ -z "${push_flag}" ]; then
+    # podmanの場合、--pushオプションがないためpushする
+    "$CONTAINER_CLI" push ghcr.io/kenta-ja8/"${image}":latest
+  fi
 }
 
 if [ "$#" -eq 0 ]; then
