@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM golang:1.25.1 AS deps
+FROM golang:1.25.1 AS deps
 WORKDIR /src
 
 ENV CGO_ENABLED=0
