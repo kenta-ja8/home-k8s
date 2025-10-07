@@ -37,6 +37,16 @@ spec:
             secretKeyRef:
               name: app-sealedsecret
               key: POSTGRES_PASSWORD
+        - name: LINE_GROUP_ID
+          valueFrom:
+            secretKeyRef:
+              name: app-sealedsecret
+              key: LINE_GROUP_ID
+        - name: LINE_CHANNEL_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: app-sealedsecret
+              key: LINE_CHANNEL_TOKEN
 ---
 apiVersion: batch/v1
 kind: CronJob
@@ -69,6 +79,16 @@ spec:
                   secretKeyRef:
                     name: app-sealedsecret
                     key: POSTGRES_PASSWORD
+              - name: LINE_GROUP_ID
+                valueFrom:
+                  secretKeyRef:
+                    name: app-sealedsecret
+                    key: LINE_GROUP_ID
+              - name: LINE_CHANNEL_TOKEN
+                valueFrom:
+                  secretKeyRef:
+                    name: app-sealedsecret
+                    key: LINE_CHANNEL_TOKEN
           restartPolicy: OnFailure
 ---
 apiVersion: batch/v1
