@@ -56,7 +56,7 @@ func (c *LineMessageClient) SendMessage(message string) error {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return errors.WithStack(err)
+		return errors.New("failed to send message to LINE. status: " + resp.Status)
 	}
 
 	return nil

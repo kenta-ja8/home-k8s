@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -12,7 +13,7 @@ import (
 	"github.com/kenta-ja8/home-k8s-app/pkg/usecase"
 )
 
-func exec() error {
+func run() error {
 	cfg := entity.LoadConfig()
 	db, err := client.NewPostgresClient(cfg)
 	if err != nil {
@@ -28,7 +29,7 @@ func exec() error {
 		sampleUsecase.AccessDB(w, r)
 	})
 	r.Post("/healthcare-collect", func(w http.ResponseWriter, r *http.Request) {
-		healthcareCollectorUsecase.Collect(w, r)
+		errorHandler(healthcareCollectorUsecase.Collect(w, r), w)
 	})
 
 	err = http.ListenAndServe(":8080", r)
@@ -38,11 +39,19 @@ func exec() error {
 	return nil
 }
 
+func errorHandler(err error, w http.ResponseWriter) {
+	if err != nil {
+		logger.Error(fmt.Sprintf("%+v", err))
+		w.WriteHeader(http.StatusInternalServerError)
+		_, _ = w.Write([]byte(err.Error()))
+	}
+}
+
 func main() {
 	logger.Info("Hello World!")
 	defer logger.Info("Goodbye World!")
 
-	if err := exec(); err != nil {
+	if err := run(); err != nil {
 		log.Fatal(err)
 	}
 }

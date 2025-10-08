@@ -3,8 +3,6 @@ package usecase
 import (
 	"context"
 	"encoding/json"
-	"errors"
-	"fmt"
 	"io"
 	"net/http"
 	"strconv"
@@ -14,6 +12,7 @@ import (
 	"github.com/kenta-ja8/home-k8s-app/pkg/entity"
 	"github.com/kenta-ja8/home-k8s-app/pkg/logger"
 	"github.com/kenta-ja8/home-k8s-app/pkg/repository"
+	"github.com/pkg/errors"
 	"gorm.io/gorm"
 )
 
@@ -64,16 +63,6 @@ type HealthRecord struct {
 }
 
 type valueConverter func(string) (string, error)
-
-func (u *HealthcareCollectorUsecase) respondInternalServerError(w http.ResponseWriter, message string, err error) error {
-	wrappedErr := fmt.Errorf("%s: %w", message, err)
-	logger.Error("HealthcareCollectorUsecase", "err: ", wrappedErr)
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusInternalServerError)
-	_, _ = w.Write([]byte(wrappedErr.Error()))
-
-	return wrappedErr
-}
 
 func convertDurationToSeconds(val string) (string, error) {
 	if val == "" {
@@ -127,19 +116,19 @@ func buildHealthRecord(item Item, convert valueConverter) (*HealthRecord, error)
 	}
 	startTime, err := time.Parse(time.RFC3339, item.StartTime)
 	if err != nil {
-		return nil, fmt.Errorf("parse start time: %w", err)
+		return nil, errors.Wrap(err, "failed to parse start time")
 	}
 	endTime, err := time.Parse(time.RFC3339, item.EndTime)
 	if err != nil {
-		return nil, fmt.Errorf("parse end time: %w", err)
+		return nil, errors.Wrap(err, "failed to parse end time")
 	}
 	durationSeconds, err := convertDurationToSeconds(item.Duration)
 	if err != nil {
-		return nil, fmt.Errorf("convert duration to seconds: %w", err)
+		return nil, errors.Wrap(err, "failed to parse duration")
 	}
 	value, err := convert(item.Value)
 	if err != nil {
-		return nil, fmt.Errorf("convert value: %w", err)
+		return nil, errors.Wrap(err, "failed to convert value")
 	}
 	return &HealthRecord{
 		BaseModel:       repository.NewBaseModel(),
@@ -159,38 +148,38 @@ func (u *HealthcareCollectorUsecase) Collect(w http.ResponseWriter, r *http.Requ
 	ctx := r.Context()
 	b, err := io.ReadAll(r.Body)
 	if err != nil {
-		return u.respondInternalServerError(w, "read request body", err)
+		return errors.WithStack(err)
 	}
 	var body RequestBody
 	err = json.Unmarshal(b, &body)
 	if err != nil {
-		return u.respondInternalServerError(w, "unmarshal request body", err)
+		return errors.WithStack(err)
 	}
 	defer func() { _ = r.Body.Close() }()
 
 	if len(body.ActiveEnergyItems) > 0 {
 		if err := u.save(ctx, body.ActiveEnergyItems, "h_active_energies", nil); err != nil {
-			return u.respondInternalServerError(w, "save active energy items", err)
+			return err
 		}
 	}
 	if len(body.RestingEnergyItems) > 0 {
 		if err := u.save(ctx, body.RestingEnergyItems, "h_resting_energies", nil); err != nil {
-			return u.respondInternalServerError(w, "save resting energy items", err)
+			return err
 		}
 	}
 	if len(body.SleepItems) > 0 {
 		if err := u.save(ctx, body.SleepItems, "h_sleep_records", nil); err != nil {
-			return u.respondInternalServerError(w, "save sleep items", err)
+			return err
 		}
 	}
 	if len(body.MindfulMinuteItems) > 0 {
 		if err := u.save(ctx, body.MindfulMinuteItems, "h_mindful_minutes", convertStringToFloat); err != nil {
-			return u.respondInternalServerError(w, "save mindful minute items", err)
+			return err
 		}
 	}
 	if len(body.HeartRateItems) > 0 {
 		if err := u.save(ctx, body.HeartRateItems, "h_heart_rates", nil); err != nil {
-			return u.respondInternalServerError(w, "save heart rate items", err)
+			return err
 		}
 	}
 
@@ -212,7 +201,7 @@ func (u *HealthcareCollectorUsecase) save(ctx context.Context, items []Item, tab
 
 		record, err := buildHealthRecord(item, converter)
 		if err != nil {
-			return fmt.Errorf("build health record: %w", err)
+			return err
 		}
 
 		query := tx.WithContext(ctx).
@@ -222,11 +211,11 @@ func (u *HealthcareCollectorUsecase) save(ctx context.Context, items []Item, tab
 		var existing HealthRecord
 		if err := query.Take(&existing).Error; err != nil {
 			if !errors.Is(err, gorm.ErrRecordNotFound) {
-				return fmt.Errorf("find %s: %w", tableName, err)
+				return errors.Wrap(err, "failed to query")
 			}
 
 			if err := tx.WithContext(ctx).Table(tableName).Create(record).Error; err != nil {
-				return fmt.Errorf("create %s: %w", tableName, err)
+				return errors.Wrap(err, "failed to query")
 			}
 
 			logger.Info("created healthcare record", "record:", record)
