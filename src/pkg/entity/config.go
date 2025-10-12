@@ -9,6 +9,7 @@ import (
 )
 
 type Config struct {
+	IS_LOCAL           bool
 	SAMPLE_USER        string
 	BUILD_DATE         string
 	HOSTNAME           string
@@ -32,6 +33,7 @@ func LoadConfig() *Config {
 	})
 
 	return &Config{
+		IS_LOCAL:           os.Getenv("IS_LOCAL") == "true",
 		SAMPLE_USER:        os.Getenv("SAMPLE_USER"),
 		BUILD_DATE:         os.Getenv("BUILD_DATE"),
 		HOSTNAME:           os.Getenv("HOSTNAME"),

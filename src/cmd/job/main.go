@@ -43,8 +43,11 @@ func main() {
 	logger.Info("start job")
 	defer logger.Info("end job")
 
+	cfg := entity.LoadConfig()
+	logger.Init(cfg)
+
 	if err := rootCmd.Execute(); err != nil {
-		logger.Error("Error:", err)
+		logger.Error("Error: %v", err)
 		os.Exit(1)
 	}
 }

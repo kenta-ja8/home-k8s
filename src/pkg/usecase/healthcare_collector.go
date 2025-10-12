@@ -197,7 +197,7 @@ func (u *HealthcareCollectorUsecase) save(ctx context.Context, items []Item, tab
 	defer tx.Rollback()
 
 	for _, item := range items {
-		logger.Info("HealthcareCollectorUsecase Collect", "item:", item)
+		logger.Info("HealthcareCollectorUsecase Collect item: %+v", item)
 
 		record, err := buildHealthRecord(item, converter)
 		if err != nil {
@@ -218,11 +218,11 @@ func (u *HealthcareCollectorUsecase) save(ctx context.Context, items []Item, tab
 				return errors.Wrap(err, "failed to query")
 			}
 
-			logger.Info("created healthcare record", "record:", record)
+			logger.Info("created healthcare record: %+v", record)
 			continue
 		}
 
-		logger.Info("record already existed", "record:", &existing)
+		logger.Info("record already existed: %+v", &existing)
 	}
 
 	tx.Commit()

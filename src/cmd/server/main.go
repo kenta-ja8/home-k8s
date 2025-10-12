@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
@@ -13,8 +12,7 @@ import (
 	"github.com/kenta-ja8/home-k8s-app/pkg/usecase"
 )
 
-func run() error {
-	cfg := entity.LoadConfig()
+func run(cfg *entity.Config) error {
 	db, err := client.NewPostgresClient(cfg)
 	if err != nil {
 		return err
@@ -41,17 +39,20 @@ func run() error {
 
 func errorHandler(err error, w http.ResponseWriter) {
 	if err != nil {
-		logger.Error(fmt.Sprintf("%+v", err))
+		logger.Error("%+v", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		_, _ = w.Write([]byte(err.Error()))
 	}
 }
 
 func main() {
-	logger.Info("Hello World!")
-	defer logger.Info("Goodbye World!")
+	logger.Info("start server")
+	defer logger.Info("end server")
 
-	if err := run(); err != nil {
+	cfg := entity.LoadConfig()
+	logger.Init(cfg)
+
+	if err := run(cfg); err != nil {
 		log.Fatal(err)
 	}
 }

@@ -18,6 +18,14 @@ func NewPostgresClient(cfg *entity.Config) (*gorm.DB, error) {
 		cfg.POSTGRES_HOST,
 		cfg.POSTGRES_DB,
 	)
+	if cfg.IS_LOCAL {
+		dsn = fmt.Sprintf(
+			"postgres://%s@%s:15432/%s?sslmode=disable&search_path=main",
+			cfg.POSTGRES_USER,
+			cfg.POSTGRES_HOST,
+			cfg.POSTGRES_DB,
+		)
+	}
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger: gormlogger.Default.LogMode(gormlogger.Info),
 	})
