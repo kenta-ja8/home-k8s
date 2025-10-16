@@ -1,0 +1,46 @@
+version: 2
+updates:
+  - package-ecosystem: "docker"
+    directory: "/app-helm"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "dependencies"
+    groups:
+      app-helm-images:
+        patterns:
+          - "*"
+  - package-ecosystem: "docker"
+    directory: "/log-collection"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "dependencies"
+    groups:
+      log-collection-images:
+        patterns:
+          - "*"
+  - package-ecosystem: "docker"
+    directory: "/visualization"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "dependencies"
+    groups:
+      visualization-images:
+        patterns:
+          - "*"
+  - package-ecosystem: "docker"
+    directory: "/log-aggregation"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "dependencies"
+    groups:
+      log-aggregation-images:
+        patterns:
+          - "*"

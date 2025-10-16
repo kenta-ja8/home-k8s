@@ -397,7 +397,7 @@ loki:
   useTestSchema: false
   testSchemaConfig:
     configs:
-      - from: 2024-04-01
+      - from: "2024-04-01"
         store: tsdb
         object_store: '{{ include "loki.testSchemaObjectStore" . }}'
         schema: v13
@@ -3535,4 +3535,3 @@ tableManager:
   retention_deletes_enabled: false
   # -- Set retention period
   retention_period: 0
-
