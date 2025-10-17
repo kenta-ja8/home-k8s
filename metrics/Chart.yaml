@@ -1,0 +1,10 @@
+apiVersion: v2
+name: metrics
+description: Helm chart that deploys kube-prometheus-stack for cluster-wide metrics aggregation.
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+dependencies:
+  - name: kube-prometheus-stack
+    version: 78.3.0
+    repository: https://prometheus-community.github.io/helm-charts

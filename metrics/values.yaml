@@ -1,0 +1,101 @@
+kube-prometheus-stack:
+  defaultRules:
+    create: false
+
+  windowsMonitoring:
+    enabled: false
+
+  prometheus-windows-exporter:
+    prometheus:
+      monitor:
+        enabled: false
+
+  alertmanager:
+    enabled: false
+
+  grafana:
+    enabled: false
+
+  kubernetesServiceMonitors:
+    enabled: false
+
+  kubeApiServer:
+    enabled: false
+
+  kubeControllerManager:
+    enabled: false
+
+  coreDns:
+    enabled: false
+
+  kubeDns:
+    enabled: false
+
+  kubeEtcd:
+    enabled: false
+
+  kubeScheduler:
+    enabled: false
+
+  kubeProxy:
+    enabled: false
+
+  kubeStateMetrics:
+    enabled: true
+
+  kubelet:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+      interval: 30s
+      https: true
+      insecureSkipVerify: true
+      probes: true
+      cAdvisor: true
+
+  nodeExporter:
+    enabled: true
+    operatingSystems:
+      linux:
+        enabled: true
+      aix:
+        enabled: false
+      darwin:
+        enabled: false
+
+  prometheus-node-exporter:
+    prometheus:
+      monitor:
+        enabled: true
+        interval: 30s
+
+  prometheusOperator:
+    enabled: true
+
+  prometheus:
+    enabled: true
+    service:
+      type: ClusterIP
+    prometheusSpec:
+      scrapeInterval: 30s
+      evaluationInterval: 30s
+      retention: 7d
+      retentionSize: "10GiB"
+      podMonitorSelectorNilUsesHelmValues: false
+      serviceMonitorSelectorNilUsesHelmValues: false
+      ruleSelectorNilUsesHelmValues: false
+      serviceMonitorSelector: {}
+      podMonitorSelector: {}
+      probeSelector: {}
+      storageSpec:
+        volumeClaimTemplate:
+          spec:
+            storageClassName: longhorn
+            accessModes:
+              - ReadWriteOnce
+            resources:
+              requests:
+                storage: 20Gi
+
+  thanosRuler:
+    enabled: false
