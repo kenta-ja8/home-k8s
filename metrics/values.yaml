@@ -79,8 +79,8 @@ kube-prometheus-stack:
     prometheusSpec:
       scrapeInterval: 30s
       evaluationInterval: 30s
-      retention: 7d
-      retentionSize: "10GiB"
+      retention: 3d
+      retentionSize: "3GiB"
       podMonitorSelectorNilUsesHelmValues: false
       serviceMonitorSelectorNilUsesHelmValues: false
       ruleSelectorNilUsesHelmValues: false
@@ -95,7 +95,7 @@ kube-prometheus-stack:
               - ReadWriteOnce
             resources:
               requests:
-                storage: 20Gi
+                storage: 5Gi
 
   thanosRuler:
     enabled: false
