@@ -82,6 +82,7 @@ case "$1" in
         "kubectl port-forward svc/argocd-server -n argocd --address 0.0.0.0 8080:443"
         "kubectl port-forward svc/postgres-svc 15432:5432 --namespace app"
         "kubectl port-forward svc/grafana-svc 30090:3000 --namespace visualization"
+        "kubectl port-forward svc/longhorn-frontend 30091:80 --namespace longhorn-system "
       )
       for pf in "${PORT_FORWARDS[@]}"; do
         echo "Running: $pf"

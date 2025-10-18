@@ -1,11 +1,11 @@
 package usecase
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/kenta-ja8/home-k8s-app/pkg/entity"
 	"github.com/kenta-ja8/home-k8s-app/pkg/helper"
+	"github.com/kenta-ja8/home-k8s-app/pkg/logger"
 	"gorm.io/gorm"
 )
 
@@ -24,10 +24,9 @@ func NewSampleUsecase(cfg *entity.Config, db *gorm.DB) *SampleUsecase {
 func (u *SampleUsecase) AccessDB(w http.ResponseWriter, r *http.Request) {
 	var employee entity.Employee
 	u.db.First(&employee)
-	fmt.Println("First employee:", employee, employee.ID)
-	fmt.Printf("First employee: %+v\n", employee)
+	logger.Info("First employee: %+v", employee)
 	w.Write([]byte(
-		"AAAwelcomeX" + u.cfg.BUILD_DATE + employee.Name,
+		"BUILD_DATE: " + u.cfg.BUILD_DATE,
 	))
 }
 

@@ -15,7 +15,7 @@ spec:
       serviceAccount: promtail-serviceaccount
       containers:
       - name: promtail-container
-        image: grafana/promtail
+        image: grafana/promtail@sha256:698c3357886c886bb9a862da36062e130c20bf359d956148e67ee36141ef6f17
         args:
         - -config.file=/etc/promtail/promtail.yaml
         env: 
@@ -134,4 +134,3 @@ roleRef:
     apiGroup: rbac.authorization.k8s.io
 
         
-

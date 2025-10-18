@@ -12,6 +12,17 @@ updates:
         patterns:
           - "*"
   - package-ecosystem: "docker"
+    directory: "/argocd"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "dependencies"
+    groups:
+      argocd-images:
+        patterns:
+          - "*"
+  - package-ecosystem: "docker"
     directory: "/log-collection"
     schedule:
       interval: "weekly"

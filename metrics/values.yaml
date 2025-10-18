@@ -17,7 +17,7 @@ kube-prometheus-stack:
     enabled: false
 
   kubernetesServiceMonitors:
-    enabled: false
+    enabled: true
 
   kubeApiServer:
     enabled: false
