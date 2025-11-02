@@ -1,3 +1,4 @@
 .env
 secret/cert.pem
 secret/secret-origin.yaml
+tmp/

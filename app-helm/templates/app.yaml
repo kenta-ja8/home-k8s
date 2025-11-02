@@ -146,7 +146,7 @@ spec:
     spec:
       containers:
       - name: postgres
-        image: postgres:15
+        image: postgres:18.0-bookworm
         ports:
         - containerPort: 5432
         env:
@@ -161,7 +161,7 @@ spec:
               key: POSTGRES_PASSWORD
         volumeMounts:
         - name: pgdata
-          mountPath: /var/lib/postgresql/data
+          mountPath: /var/lib/postgresql
           subPath: pgdata
       volumes:
       - name: pgdata
