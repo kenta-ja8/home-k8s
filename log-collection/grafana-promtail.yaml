@@ -69,8 +69,13 @@ data:
         - source_labels:
             - __meta_kubernetes_pod_node_name
           target_label: __host__
+        # Keep only key app labels and drop noisy Helm metadata to stay under Loki's 15-label limit
         - action: labelmap
-          regex: __meta_kubernetes_pod_label_(.+)
+          regex: __meta_kubernetes_pod_label_app_kubernetes_io_(name|component|instance)
+        - action: labelmap
+          regex: __meta_kubernetes_pod_label_(app|role)
+        - action: labeldrop
+          regex: (app_kubernetes_io_version|chart|heritage|release|app_kubernetes_io_managed_by|app_kubernetes_io_part_of)
         - action: replace
           replacement: $1
           separator: /
