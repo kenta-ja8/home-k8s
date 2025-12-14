@@ -19,6 +19,7 @@ type Config struct {
 	POSTGRES_PASSWORD  string
 	LINE_CHANNEL_TOKEN string
 	LINE_GROUP_ID      string
+	NATUREREMO_TOKEN   string
 }
 
 var once sync.Once
@@ -43,5 +44,6 @@ func LoadConfig() *Config {
 		POSTGRES_PASSWORD:  os.Getenv("POSTGRES_PASSWORD"),
 		LINE_CHANNEL_TOKEN: os.Getenv("LINE_CHANNEL_TOKEN"),
 		LINE_GROUP_ID:      os.Getenv("LINE_GROUP_ID"),
+		NATUREREMO_TOKEN:   os.Getenv("NATUREREMO_TOKEN"),
 	}
 }

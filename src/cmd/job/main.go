@@ -37,6 +37,20 @@ func init() {
 			return uc.Run(cmd.Context())
 		},
 	})
+	rootCmd.AddCommand(&cobra.Command{
+		Use: "collect-natureremo",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
+			cfg := entity.LoadConfig()
+			db, err := client.NewPostgresClient(cfg)
+			if err != nil {
+				return err
+			}
+			natureremoClient := client.NewNatureremoClient(cfg)
+			uc := usecase.NewNatureremo(natureremoClient, db)
+			return uc.Collect(ctx)
+		},
+	})
 }
 
 func main() {

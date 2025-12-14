@@ -32,21 +32,9 @@ spec:
           value: maindb
         - name: POSTGRES_USER
           value: mainuser
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: app-sealedsecret
-              key: POSTGRES_PASSWORD
-        - name: LINE_GROUP_ID
-          valueFrom:
-            secretKeyRef:
-              name: app-sealedsecret
-              key: LINE_GROUP_ID
-        - name: LINE_CHANNEL_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: app-sealedsecret
-              key: LINE_CHANNEL_TOKEN
+        envFrom:
+        - secretRef:
+            name: app-sealedsecret
 ---
 apiVersion: batch/v1
 kind: CronJob
@@ -74,21 +62,9 @@ spec:
                 value: maindb
               - name: POSTGRES_USER
                 value: mainuser
-              - name: POSTGRES_PASSWORD
-                valueFrom:
-                  secretKeyRef:
-                    name: app-sealedsecret
-                    key: POSTGRES_PASSWORD
-              - name: LINE_GROUP_ID
-                valueFrom:
-                  secretKeyRef:
-                    name: app-sealedsecret
-                    key: LINE_GROUP_ID
-              - name: LINE_CHANNEL_TOKEN
-                valueFrom:
-                  secretKeyRef:
-                    name: app-sealedsecret
-                    key: LINE_CHANNEL_TOKEN
+              envFrom:
+              - secretRef:
+                  name: app-sealedsecret
           restartPolicy: OnFailure
 ---
 apiVersion: batch/v1
@@ -111,6 +87,38 @@ spec:
               image: ghcr.io/kenta-ja8/home-k8s-app-job:{{ .Values.image.jobTag }}
               args:
                 - "pantry-order-reminder"
+              envFrom:
+              - secretRef:
+                  name: app-sealedsecret
+          restartPolicy: OnFailure
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: home-k8s-app-job-collect-natureremo
+  namespace: app
+spec:
+  schedule: "*/5 * * * *"
+  timeZone: "Asia/Tokyo"
+  startingDeadlineSeconds: 300
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: home-k8s-app-job-collect-natureremo
+              image: ghcr.io/kenta-ja8/home-k8s-app-job:{{ .Values.image.jobTag }}
+              args:
+                - "collect-natureremo"
+              env:
+              - name: POSTGRES_HOST
+                value: postgres-svc.app.svc.cluster.local
+              - name: POSTGRES_DB
+                value: maindb
+              - name: POSTGRES_USER
+                value: mainuser
               envFrom:
               - secretRef:
                   name: app-sealedsecret
