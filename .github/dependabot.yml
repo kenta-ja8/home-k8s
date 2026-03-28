@@ -44,17 +44,6 @@ updates:
       visualization-images:
         patterns:
           - "*"
-  - package-ecosystem: "docker"
-    directory: "/log-aggregation"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-    labels:
-      - "dependencies"
-    groups:
-      log-aggregation-images:
-        patterns:
-          - "*"
   - package-ecosystem: "helm"
     directory: "/metrics"
     schedule:
