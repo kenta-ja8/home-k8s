@@ -2,3 +2,4 @@
 secret/cert.pem
 secret/secret-origin.yaml
 tmp/
+log-aggregation/charts/

@@ -55,3 +55,25 @@ updates:
       log-aggregation-images:
         patterns:
           - "*"
+  - package-ecosystem: "helm"
+    directory: "/metrics"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "dependencies"
+    groups:
+      metrics-charts:
+        patterns:
+          - "*"
+  - package-ecosystem: "helm"
+    directory: "/log-aggregation"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "dependencies"
+    groups:
+      log-aggregation-charts:
+        patterns:
+          - "*"
